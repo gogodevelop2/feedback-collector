@@ -1,73 +1,104 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>피드백 페이지 관리자</title>
-    <link rel="stylesheet" href="css/admin.css">
-</head>
-<body>
-    <div class="container">
-        <div class="card">
-            <h1>새 피드백 페이지 만들기</h1>
-            
-            <form id="createForm">
-                <div class="form-group">
-                    <label for="pageTitle">페이지 제목</label>
-                    <input type="text" id="pageTitle" placeholder="예: 오늘 세미나는 어떠셨나요?" required>
-                    <div class="error" id="titleError"></div>
-                </div>
+// URL 파라미터 처리
+function getUrlParams() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+        title: decodeURIComponent(params.get('title') || '오늘 기억에 남는 내용이 있었나요?🤗'),
+        image: decodeURIComponent(params.get('image') || ''),
+        ogTitle: decodeURIComponent(params.get('ogTitle') || '피드백을 남겨주세요'),
+        sheetId: params.get('sheetId'),
+        webAppUrl: params.get('webAppUrl')
+    };
+}
 
-                <div class="form-group">
-                    <label for="sheetId">구글 시트 ID</label>
-                    <input type="text" id="sheetId" placeholder="구글 스프레드시트 URL에서 ID 부분을 복사해주세요" required>
-                    <div class="error" id="sheetError"></div>
-                </div>
+// 페이지 초기화
+function initializePage() {
+    const params = getUrlParams();
+    
+    // 필수 파라미터 체크
+    if (!params.sheetId || !params.webAppUrl) {
+        document.body.innerHTML = '<div style="text-align: center; padding: 20px;">Invalid URL parameters</div>';
+        throw new Error('Missing required URL parameters');
+    }
 
-                <div class="form-group">
-                    <label for="webAppUrl">구글 앱스 스크립트 웹앱 URL</label>
-                    <input type="url" id="webAppUrl" placeholder="배포된 웹앱 URL을 입력해주세요" required>
-                    <div class="error" id="urlError"></div>
-                </div>
+    // 페이지 타이틀 설정
+    document.title = params.ogTitle;
+    document.getElementById('pageTitle').textContent = params.title;
 
-                <div class="form-group">
-                    <label>미리보기 이미지 선택</label>
-                    <div class="image-grid" id="imageGrid">
-                        <!-- 이미지는 실제 서버의 이미지 경로로 교체 필요 -->
-                        <div class="image-option" data-image="/images/preview1.jpg">
-                            <img src="/api/placeholder/120/120" alt="preview 1">
-                        </div>
-                        <div class="image-option" data-image="/images/preview2.jpg">
-                            <img src="/api/placeholder/120/120" alt="preview 2">
-                        </div>
-                        <div class="image-option" data-image="/images/preview3.jpg">
-                            <img src="/api/placeholder/120/120" alt="preview 3">
-                        </div>
-                        <div class="image-option" data-image="/images/preview4.jpg">
-                            <img src="/api/placeholder/120/120" alt="preview 4">
-                        </div>
-                        <div class="image-option" data-image="/images/preview5.jpg">
-                            <img src="/api/placeholder/120/120" alt="preview 5">
-                        </div>
-                    </div>
-                </div>
+    // OG 메타 태그 설정
+    if (params.image) {
+        document.querySelector('meta[property="og:image"]').setAttribute('content', params.image);
+        document.querySelector('meta[property="twitter:image"]').setAttribute('content', params.image);
+    }
+    document.querySelector('meta[property="og:title"]').setAttribute('content', params.ogTitle);
+    document.querySelector('meta[property="twitter:title"]').setAttribute('content', params.ogTitle);
 
-                <button type="submit" id="createButton">페이지 생성하기</button>
+    return params;
+}
 
-                <div class="preview" id="urlPreview" style="display: none;">
-                    <h3>생성된 URL:</h3>
-                    <p id="generatedUrl"></p>
-                </div>
-            </form>
-        </div>
+// 폼 제출 처리
+async function submitFeedback(feedback, webAppUrl, sheetId) {
+    const submitButton = document.getElementById('submitButton');
+    const loading = document.getElementById('loading');
+    const errorMessage = document.getElementById('errorMessage');
+    
+    submitButton.disabled = true;
+    loading.style.display = 'block';
+    errorMessage.style.display = 'none';
 
-        <div class="card history">
-            <h2>생성된 페이지 목록</h2>
-            <div id="historyList">
-                <!-- 히스토리 아이템들이 여기에 동적으로 추가됨 -->
-            </div>
-        </div>
-    </div>
-    <script src="js/admin.js"></script>
-</body>
-</html>
+    try {
+        await fetch(webAppUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                feedback: feedback,
+                sheetId: sheetId,
+                timestamp: new Date().toISOString()
+            })
+        });
+
+        document.getElementById('feedbackForm').style.display = 'none';
+        document.getElementById('thankYou').style.display = 'block';
+        
+    } catch (error) {
+        errorMessage.textContent = '제출 중 오류가 발생했습니다. 다시 시도해주세요.';
+        errorMessage.style.display = 'block';
+        submitButton.disabled = false;
+    } finally {
+        loading.style.display = 'none';
+    }
+}
+
+// 메인 실행 코드
+document.addEventListener('DOMContentLoaded', function() {
+    const params = initializePage();
+    const form = document.getElementById('feedbackForm');
+    const textarea = document.getElementById('feedbackText');
+    const charCount = document.getElementById('charCount');
+
+    // 글자 수 카운터
+    textarea.addEventListener('input', function() {
+        const length = this.value.length;
+        charCount.textContent = length;
+        
+        if (length > 1000) {
+            this.value = this.value.substring(0, 1000);
+            charCount.textContent = '1000';
+        }
+    });
+
+    // 폼 제출
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const feedback = textarea.value.trim();
+        if (!feedback) {
+            alert('내용을 입력해주세요.');
+            return;
+        }
+
+        submitFeedback(feedback, params.webAppUrl, params.sheetId);
+    });
+});
