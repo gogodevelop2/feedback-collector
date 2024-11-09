@@ -7,7 +7,67 @@
     <link rel="stylesheet" href="css/admin.css">
 </head>
 <body>
-    <!-- 이전 관리자 페이지 HTML 내용 -->
+    <div class="container">
+        <div class="card">
+            <h1>새 피드백 페이지 만들기</h1>
+            
+            <form id="createForm">
+                <div class="form-group">
+                    <label for="pageTitle">페이지 제목</label>
+                    <input type="text" id="pageTitle" placeholder="예: 오늘 세미나는 어떠셨나요?" required>
+                    <div class="error" id="titleError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="sheetId">구글 시트 ID</label>
+                    <input type="text" id="sheetId" placeholder="구글 스프레드시트 URL에서 ID 부분을 복사해주세요" required>
+                    <div class="error" id="sheetError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="webAppUrl">구글 앱스 스크립트 웹앱 URL</label>
+                    <input type="url" id="webAppUrl" placeholder="배포된 웹앱 URL을 입력해주세요" required>
+                    <div class="error" id="urlError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>미리보기 이미지 선택</label>
+                    <div class="image-grid" id="imageGrid">
+                        <!-- 이미지는 실제 서버의 이미지 경로로 교체 필요 -->
+                        <div class="image-option" data-image="/images/preview1.jpg">
+                            <img src="/api/placeholder/120/120" alt="preview 1">
+                        </div>
+                        <div class="image-option" data-image="/images/preview2.jpg">
+                            <img src="/api/placeholder/120/120" alt="preview 2">
+                        </div>
+                        <div class="image-option" data-image="/images/preview3.jpg">
+                            <img src="/api/placeholder/120/120" alt="preview 3">
+                        </div>
+                        <div class="image-option" data-image="/images/preview4.jpg">
+                            <img src="/api/placeholder/120/120" alt="preview 4">
+                        </div>
+                        <div class="image-option" data-image="/images/preview5.jpg">
+                            <img src="/api/placeholder/120/120" alt="preview 5">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" id="createButton">페이지 생성하기</button>
+
+                <div class="preview" id="urlPreview" style="display: none;">
+                    <h3>생성된 URL:</h3>
+                    <p id="generatedUrl"></p>
+                </div>
+            </form>
+        </div>
+
+        <div class="card history">
+            <h2>생성된 페이지 목록</h2>
+            <div id="historyList">
+                <!-- 히스토리 아이템들이 여기에 동적으로 추가됨 -->
+            </div>
+        </div>
+    </div>
     <script src="js/admin.js"></script>
 </body>
 </html>
