@@ -3,71 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>피드백 페이지 관리자</title>
-    <link rel="stylesheet" href="css/admin.css">
+    <title>피드백을 들려주세요</title>
+    <!-- 메타 태그 (카카오톡, 메신저 미리보기용) -->
+    <meta property="og:title" content="피드백을 들려주세요">
+    <meta property="og:description" content="오늘 행사는 어떠셨나요? 여러분의 소중한 의견을 들려주세요.">
+    <meta property="og:image" content="이미지_URL을_여기에_입력하세요">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-section {
+            height: 50vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .question {
+            font-size: 24px;
+            text-align: center;
+            line-height: 1.5;
+            color: #333;
+        }
+
+        .bottom-section {
+            height: 50vh;
+            background: white;
+            border-radius: 30px 30px 0 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            font-size: 16px;
+            resize: none;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #007AFF;
+        }
+
+        .char-count {
+            text-align: right;
+            color: #666;
+            font-size: 14px;
+        }
+
+        button {
+            background: #007AFF;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 15px;
+            font-size: 18px;
+            cursor: pointer;
+            touch-action: manipulation;
+            transition: background-color 0.2s;
+        }
+
+        button:disabled {
+            background: #cccccc;
+        }
+
+        .thank-you {
+            text-align: center;
+            font-size: 24px;
+            color: #333;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .question {
+                font-size: 22px;
+            }
+            
+            textarea {
+                height: 150px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <div class="card">
-            <h1>새 피드백 페이지 만들기</h1>
-            
-            <form id="createForm">
-                <div class="form-group">
-                    <label for="pageTitle">페이지 제목</label>
-                    <input type="text" id="pageTitle" placeholder="예: 오늘 세미나는 어떠셨나요?" required>
-                    <div class="error" id="titleError"></div>
-                </div>
-
-                <div class="form-group">
-                    <label for="sheetId">구글 시트 ID</label>
-                    <input type="text" id="sheetId" placeholder="구글 스프레드시트 URL에서 ID 부분을 복사해주세요" required>
-                    <div class="error" id="sheetError"></div>
-                </div>
-
-                <div class="form-group">
-                    <label for="webAppUrl">구글 앱스 스크립트 웹앱 URL</label>
-                    <input type="url" id="webAppUrl" placeholder="배포된 웹앱 URL을 입력해주세요" required>
-                    <div class="error" id="urlError"></div>
-                </div>
-
-                <div class="form-group">
-                    <label>미리보기 이미지 선택</label>
-                    <div class="image-grid" id="imageGrid">
-                        <div class="image-option" data-image="images/preview1.png">
-                            <img src="images/preview1.png" alt="preview 1">
-                        </div>
-                        <div class="image-option" data-image="images/preview2.svg">
-                            <img src="images/preview2.svg" alt="preview 2">
-                        </div>
-                        <div class="image-option" data-image="images/preview3.svg">
-                            <img src="images/preview3.svg" alt="preview 3">
-                        </div>
-                        <div class="image-option" data-image="images/preview4.svg">
-                            <img src="images/preview4.svg" alt="preview 4">
-                        </div>
-                        <div class="image-option" data-image="images/preview5.svg">
-                            <img src="images/preview5.svg" alt="preview 5">
-                        </div>
-                    </div>
-                </div>
-
-                <button type="submit" id="createButton">페이지 생성하기</button>
-
-                <div class="preview" id="urlPreview" style="display: none;">
-                    <h3>생성된 URL:</h3>
-                    <p id="generatedUrl"></p>
-                </div>
-            </form>
-        </div>
-
-        <div class="card history">
-            <h2>생성된 페이지 목록</h2>
-            <div id="historyList">
-                <!-- 히스토리 아이템들이 여기에 동적으로 추가됨 -->
-            </div>
-        </div>
+    <div class="top-section">
+        <h1 class="question">오늘 기억에 남는 내용이 있었나요?🤗</h1>
+    </div>
+    
+    <div class="bottom-section">
+        <textarea id="feedback" placeholder="여러분의 소중한 의견을 들려주세요" maxlength="1000"></textarea>
+        <div class="char-count"><span id="current">0</span>/1000</div>
+        <button id="submit-btn">제출하기</button>
+        <div class="thank-you" id="thank-you">감사합니다.</div>
     </div>
 
-    <script src="js/admin.js"></script>
+    <script>
+        const textarea = document.getElementById('feedback');
+        const submitBtn = document.getElementById('submit-btn');
+        const charCount = document.getElementById('current');
+        const thankYou = document.getElementById('thank-you');
+
+        // 글자 수 카운트
+        textarea.addEventListener('input', function() {
+            const length = this.value.length;
+            charCount.textContent = length;
+        });
+
+        // Google Apps Script 웹 앱 URL (배포 후 URL로 교체 필요)
+        const SCRIPT_URL = '구글_스크립트_웹앱_URL을_여기에_입력하세요';
+
+        submitBtn.addEventListener('click', async function() {
+            const feedback = textarea.value.trim();
+            
+            if (!feedback) {
+                alert('피드백을 입력해주세요.');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        feedback: feedback,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+
+                textarea.style.display = 'none';
+                document.querySelector('.char-count').style.display = 'none';
+                submitBtn.style.display = 'none';
+                thankYou.style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('제출 중 오류가 발생했습니다. 다시 시도해주세요.');
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
 </body>
 </html>
