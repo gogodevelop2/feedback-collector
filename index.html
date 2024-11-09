@@ -7,7 +7,7 @@
     <!-- 메타 태그 (카카오톡, 메신저 미리보기용) -->
     <meta property="og:title" content="피드백을 들려주세요">
     <meta property="og:description" content="오늘 행사는 어떠셨나요? 여러분의 소중한 의견을 들려주세요.">
-    <meta property="og:image" content="images/preview1.png">
+    <meta property="og:image" content="이미지_URL을_여기에_입력하세요">
     
     <style>
         * {
@@ -22,10 +22,11 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
 
         .top-section {
-            height: 50vh;
+            height: 40vh;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -40,23 +41,31 @@
         }
 
         .bottom-section {
-            height: 50vh;
+            height: 60vh;
             background: white;
             border-radius: 30px 30px 0 0;
             padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+        }
+
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            gap: 15px;
         }
 
         textarea {
             width: 100%;
-            height: 200px;
+            flex: 1;
+            min-height: 150px;
             padding: 15px;
             border: 2px solid #e0e0e0;
             border-radius: 15px;
             font-size: 16px;
             resize: none;
+            margin-bottom: 10px;
         }
 
         textarea:focus {
@@ -68,9 +77,16 @@
             text-align: right;
             color: #666;
             font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .button-container {
+            margin-top: auto;
+            padding-bottom: 30px;
         }
 
         button {
+            width: 100%;
             background: #007AFF;
             color: white;
             border: none;
@@ -91,15 +107,12 @@
             font-size: 24px;
             color: #333;
             display: none;
+            margin-top: 40px;
         }
 
         @media (max-width: 768px) {
             .question {
                 font-size: 22px;
-            }
-            
-            textarea {
-                height: 150px;
             }
         }
     </style>
@@ -110,10 +123,14 @@
     </div>
     
     <div class="bottom-section">
-        <textarea id="feedback" placeholder="여러분의 소중한 의견을 들려주세요" maxlength="1000"></textarea>
-        <div class="char-count"><span id="current">0</span>/1000</div>
-        <button id="submit-btn">제출하기</button>
-        <div class="thank-you" id="thank-you">감사합니다.</div>
+        <div class="content-wrapper">
+            <textarea id="feedback" placeholder="여러분의 소중한 의견을 들려주세요" maxlength="1000"></textarea>
+            <div class="char-count"><span id="current">0</span>/1000</div>
+            <div class="button-container">
+                <button id="submit-btn">제출하기</button>
+            </div>
+            <div class="thank-you" id="thank-you">감사합니다.</div>
+        </div>
     </div>
 
     <script>
@@ -129,7 +146,7 @@
         });
 
         // Google Apps Script 웹 앱 URL (배포 후 URL로 교체 필요)
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyUK0SDO-VR9NDqzx7nL6gU-c4B2wqglcwtkeeKhK3kxX0e4lTi02QkFTVwuCzPwDpujA/exec';
+        const SCRIPT_URL = '구글_스크립트_웹앱_URL을_여기에_입력하세요';
 
         submitBtn.addEventListener('click', async function() {
             const feedback = textarea.value.trim();
@@ -156,7 +173,7 @@
 
                 textarea.style.display = 'none';
                 document.querySelector('.char-count').style.display = 'none';
-                submitBtn.style.display = 'none';
+                document.querySelector('.button-container').style.display = 'none';
                 thankYou.style.display = 'block';
                 
             } catch (error) {
