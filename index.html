@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>피드백을 들려주세요</title>
-    <!-- 메타 태그 (카카오톡, 메신저 미리보기용) -->
     <meta property="og:title" content="피드백을 들려주세요">
     <meta property="og:description" content="오늘 행사는 어떠셨나요? 여러분의 소중한 의견을 들려주세요.">
-    <meta property="og:image" content="images/preview1.png">
+    <meta property="og:image" content="images/preview1">
     
     <style>
         * {
@@ -19,14 +18,23 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: white;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            height: 70vh;
+            max-width: 768px;
+            display: flex;
+            flex-direction: column;
+            margin-top: 5vh;
         }
 
         .top-section {
-            height: 40vh;
+            height: 40%;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -41,7 +49,7 @@
         }
 
         .bottom-section {
-            height: 60vh;
+            height: 60%;
             background: white;
             border-radius: 30px 30px 0 0;
             padding: 20px;
@@ -59,13 +67,12 @@
         textarea {
             width: 100%;
             flex: 1;
-            min-height: 150px;
+            min-height: 120px;
             padding: 15px;
             border: 2px solid #e0e0e0;
             border-radius: 15px;
             font-size: 16px;
             resize: none;
-            margin-bottom: 10px;
         }
 
         textarea:focus {
@@ -77,12 +84,12 @@
             text-align: right;
             color: #666;
             font-size: 14px;
-            margin-bottom: 15px;
+            margin-bottom: 5px;
         }
 
         .button-container {
             margin-top: auto;
-            padding-bottom: 30px;
+            padding-bottom: 10px;
         }
 
         button {
@@ -111,25 +118,37 @@
         }
 
         @media (max-width: 768px) {
+            .container {
+                padding: 0 20px;
+            }
+            
             .question {
                 font-size: 22px;
+            }
+        }
+
+        @media (min-height: 800px) {
+            .container {
+                margin-top: 10vh;
             }
         }
     </style>
 </head>
 <body>
-    <div class="top-section">
-        <h1 class="question">오늘 기억에 남는 내용이 있었나요?🤗</h1>
-    </div>
-    
-    <div class="bottom-section">
-        <div class="content-wrapper">
-            <textarea id="feedback" placeholder="여러분의 소중한 의견을 들려주세요" maxlength="1000"></textarea>
-            <div class="char-count"><span id="current">0</span>/1000</div>
-            <div class="button-container">
-                <button id="submit-btn">제출하기</button>
+    <div class="container">
+        <div class="top-section">
+            <h1 class="question">오늘 기억에 남는 내용이 있었나요?🤗</h1>
+        </div>
+        
+        <div class="bottom-section">
+            <div class="content-wrapper">
+                <textarea id="feedback" placeholder="여러분의 소중한 의견을 들려주세요" maxlength="1000"></textarea>
+                <div class="char-count"><span id="current">0</span>/1000</div>
+                <div class="button-container">
+                    <button id="submit-btn">제출하기</button>
+                </div>
+                <div class="thank-you" id="thank-you">감사합니다.</div>
             </div>
-            <div class="thank-you" id="thank-you">감사합니다.</div>
         </div>
     </div>
 
@@ -139,13 +158,11 @@
         const charCount = document.getElementById('current');
         const thankYou = document.getElementById('thank-you');
 
-        // 글자 수 카운트
         textarea.addEventListener('input', function() {
             const length = this.value.length;
             charCount.textContent = length;
         });
 
-        // Google Apps Script 웹 앱 URL (배포 후 URL로 교체 필요)
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyUK0SDO-VR9NDqzx7nL6gU-c4B2wqglcwtkeeKhK3kxX0e4lTi02QkFTVwuCzPwDpujA/exec';
 
         submitBtn.addEventListener('click', async function() {
