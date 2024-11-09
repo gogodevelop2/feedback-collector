@@ -1,0 +1,13 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    background-color: #ffffff;
+    min-height: 100vh;
+}
+
+/* ... 이전 피드백 페이지 CSS 내용 ... */
