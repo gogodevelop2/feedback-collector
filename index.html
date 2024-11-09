@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+    <!-- 이전 메타 태그들은 동일하게 유지 -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>피드백을 들려주세요</title>
     <meta property="og:title" content="피드백을 들려주세요">
     <meta property="og:description" content="오늘 행사는 어떠셨나요? 여러분의 소중한 의견을 들려주세요.">
-    <meta property="og:image" content="images/preview1">
+    <meta property="og:image" content="이미지_URL을_여기에_입력하세요">
     
     <style>
+        /* 이전 스타일은 그대로 유지하고 일부만 수정/추가 */
         * {
             margin: 0;
             padding: 0;
@@ -84,7 +86,19 @@
             text-align: right;
             color: #666;
             font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 5px;
+        }
+
+        .min-char-notice {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .char-count.invalid .current-count {
+            color: #ff3b30;
         }
 
         .button-container {
@@ -102,11 +116,12 @@
             font-size: 18px;
             cursor: pointer;
             touch-action: manipulation;
-            transition: background-color 0.2s;
+            transition: all 0.2s;
         }
 
         button:disabled {
             background: #cccccc;
+            cursor: not-allowed;
         }
 
         .thank-you {
@@ -142,10 +157,13 @@
         
         <div class="bottom-section">
             <div class="content-wrapper">
-                <textarea id="feedback" placeholder="여러분의 소중한 의견을 들려주세요" maxlength="1000"></textarea>
-                <div class="char-count"><span id="current">0</span>/1000</div>
+                <textarea id="feedback" placeholder="여러분의 소중한 의견을 들려주세요 (최소 10자 이상)" maxlength="1000"></textarea>
+                <div class="char-count">
+                    <span class="min-char-notice">최소 10자 이상 입력해주세요</span>
+                    <span class="current-count"><span id="current">0</span>/1000</span>
+                </div>
                 <div class="button-container">
-                    <button id="submit-btn">제출하기</button>
+                    <button id="submit-btn" disabled>제출하기</button>
                 </div>
                 <div class="thank-you" id="thank-you">감사합니다.</div>
             </div>
@@ -156,20 +174,30 @@
         const textarea = document.getElementById('feedback');
         const submitBtn = document.getElementById('submit-btn');
         const charCount = document.getElementById('current');
+        const charCountContainer = document.querySelector('.char-count');
         const thankYou = document.getElementById('thank-you');
 
         textarea.addEventListener('input', function() {
-            const length = this.value.length;
+            const length = this.value.trim().length;
             charCount.textContent = length;
+            
+            // 최소 글자수 체크 및 UI 업데이트
+            if (length < 10) {
+                submitBtn.disabled = true;
+                charCountContainer.classList.add('invalid');
+            } else {
+                submitBtn.disabled = false;
+                charCountContainer.classList.remove('invalid');
+            }
         });
 
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyUK0SDO-VR9NDqzx7nL6gU-c4B2wqglcwtkeeKhK3kxX0e4lTi02QkFTVwuCzPwDpujA/exec';
+        const SCRIPT_URL = '구글_스크립트_웹앱_URL을_여기에_입력하세요';
 
         submitBtn.addEventListener('click', async function() {
             const feedback = textarea.value.trim();
             
-            if (!feedback) {
-                alert('피드백을 입력해주세요.');
+            if (feedback.length < 10) {
+                alert('최소 10자 이상 입력해주세요.');
                 return;
             }
 
