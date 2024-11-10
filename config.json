@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "title": "피드백을 들려주세요",
+    "previewImage": "https://gogodevelop2.github.io/feedback-collector/images/preview1.png",
+    "description": "오늘 행사는 어떠셨나요?"
+  },
+  "page": {
+    "mainQuestion": "오늘 기억에 남는 내용이 있었나요?",
+    "emoji": "🤗",
+    "textareaPlaceholder": "여기에 내용을 입력해주세요 (최소 10자 ^^)",
+    "submitButtonText": "제출하기",
+    "thankYou": {
+      "image": "images/preview2.png",
+      "message": "감사합니다."
+    }
+  }
+}
