@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:title" content="피드백을 들려주세요">
-    <meta property="og:image" content="https://gogodevelop2.github.io/feedback-collector/images/preview1.png">
-    <meta property="og:description" content="오늘 행사는 어떠셨나요?.">
-    <title>피드백</title>
+    <meta property="og:title" content="">
+    <meta property="og:image" content="">
+    <meta property="og:description" content="">
+    <title></title>
     <style>
         * {
             margin: 0;
@@ -135,27 +135,62 @@
 <body>
     <div class="container">
         <div class="top-section">
-            <h1 class="question">오늘 기억에 남는 내용이 있었나요?</h1>
-            <div class="emoji">🤗</div>
+            <h1 class="question"></h1>
+            <div class="emoji"></div>
         </div>
         <div class="bottom-section">
             <form class="feedback-form" id="feedbackForm">
                 <textarea 
                     id="feedbackText" 
-                    placeholder="여기에 내용을 입력해주세요 (최소 10자 ^^)"
+                    placeholder=""
                     maxlength="1000"
                 ></textarea>
                 <div class="char-counter">0 / 1000</div>
-                <button type="submit" class="submit-btn" disabled>제출하기</button>
+                <button type="submit" class="submit-btn" disabled></button>
             </form>
             <div class="thank-you">
-                <img src="images/preview2.png" alt="감사 이미지">
-                <p>감사합니다.</p>
+                <img src="" alt="감사 이미지">
+                <p></p>
             </div>
         </div>
     </div>
 
     <script>
+        // 설정 파일 로드
+        async function loadConfig() {
+            try {
+                const response = await fetch('config.json');
+                const config = await response.json();
+                return config;
+            } catch (error) {
+                console.error('설정 파일을 불러오는데 실패했습니다:', error);
+                return null;
+            }
+        }
+
+        // 페이지 초기화
+        async function initializePage() {
+            const config = await loadConfig();
+            if (!config) return;
+
+            // meta 태그 및 title 설정
+            document.title = config.meta.title;
+            document.querySelector('meta[property="og:title"]').content = config.meta.title;
+            document.querySelector('meta[property="og:image"]').content = config.meta.previewImage;
+            document.querySelector('meta[property="og:description"]').content = config.meta.description;
+
+            // 페이지 내용 설정
+            document.querySelector('.question').textContent = config.page.mainQuestion;
+            document.querySelector('.emoji').textContent = config.page.emoji;
+            document.querySelector('#feedbackText').placeholder = config.page.textareaPlaceholder;
+            document.querySelector('.submit-btn').textContent = config.page.submitButtonText;
+            document.querySelector('.thank-you img').src = config.page.thankYou.image;
+            document.querySelector('.thank-you p').textContent = config.page.thankYou.message;
+        }
+
+        // 페이지 로드 시 초기화 실행
+        document.addEventListener('DOMContentLoaded', initializePage);
+
         const form = document.getElementById('feedbackForm');
         const textarea = document.getElementById('feedbackText');
         const submitBtn = document.querySelector('.submit-btn');
