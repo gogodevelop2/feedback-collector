@@ -20,11 +20,7 @@
 1. 관리자 페이지 접속
    - https://[username].github.io/feedback-collector/
 
-2. 새 피드백 페이지 생성
-   - 페이지 제목 입력
-   - 구글 시트 ID 입력
-   - 웹앱 URL 입력
-   - 미리보기 이미지 선택
+2. config.json 파일내용을 변경하면 페이지 내용이 바뀜
 
 ## License
 MIT
