@@ -1,1 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="피드백을 들려주세요">
+    <meta property="og:image" content="https://gogodevelop2.github.io/feedback-collector/images/preview1.png">
+    <meta property="og:description" content="오늘 행사는 어떠셨나요?">
+    <title>피드백</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 768px;
+            height: 70vh;
+            margin-top: 5vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-section {
+            flex: 4;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .question {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            word-break: keep-all;
+        }
+
+        .emoji {
+            font-size: 3rem;
+        }
+
+        .bottom-section {
+            flex: 6;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .feedback-form {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        textarea {
+            flex-grow: 1;
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-size: 1rem;
+            resize: none;
+            min-height: 150px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #666;
+        }
+
+        .char-counter {
+            text-align: right;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .submit-btn {
+            padding: 1rem;
+            background-color: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            touch-action: manipulation;
+            transition: background-color 0.2s;
+        }
+
+        .submit-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .thank-you {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .thank-you img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        @media (min-height: 800px) {
+            .container {
+                margin-top: 10vh;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .question {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-section">
+            <h1 class="question">오늘 기억에 남는 내용이 있었나요?</h1>
+            <div class="emoji">🤗</div>
+        </div>
+        <div class="bottom-section">
+            <form class="feedback-form" id="feedbackForm">
+                <textarea 
+                    id="feedbackText" 
+                    placeholder="여기에 내용을 입력해주세요 (최소 10자 ^^)"
+                    maxlength="1000"
+                ></textarea>
+                <div class="char-counter">0 / 1000</div>
+                <button type="submit" class="submit-btn" disabled>제출하기</button>
+            </form>
+            <div class="thank-you">
+                <img src="images/preview2.png" alt="감사 이미지">
+                <p>감사합니다.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('feedbackForm');
+        const textarea = document.getElementById('feedbackText');
+        const submitBtn = document.querySelector('.submit-btn');
+        const charCounter = document.querySelector('.char-counter');
+        const thankYou = document.querySelector('.thank-you');
+
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw2MqJDOKIpEqPXuF_5h2AduPBjSCACJWR2gtb_6f-esWy0UPUbnD_-ykUZGototd64/exec';
+
+        textarea.addEventListener('input', () => {
+            const length = textarea.value.trim().length;
+            charCounter.textContent = `${length} / 1000`;
+            submitBtn.disabled = length < 10;
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = textarea.value.trim();
+            
+            if (text.length < 10) {
+                alert('최소 10자 이상 입력해주세요.');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        feedback: text,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+
+                form.style.display = 'none';
+                thankYou.style.display = 'flex';
+            } catch (error) {
+                console.error('Error:', error);
+                alert('제출 중 오류가 발생했습니다. 다시 시도해주세요.');
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
